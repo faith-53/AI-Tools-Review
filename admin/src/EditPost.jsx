@@ -16,7 +16,7 @@ function EditPost() {
 
   useEffect(() => {
     const fetchPost = async () => {
-      const res = await fetch(`http://localhost:5000/api/posts/${id}`, {
+      const res = await fetch(`https://ai-tools-review.onrender.com/api/posts/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -42,7 +42,7 @@ function EditPost() {
     if (image) formData.append('image', image);
     formData.append('pros', JSON.stringify(pros.filter(p => p.trim() !== '')));
     formData.append('cons', JSON.stringify(cons.filter(c => c.trim() !== '')));
-    await fetch(`http://localhost:5000/api/posts/${id}`, {
+    await fetch(`https://ai-tools-review.onrender.com/api/posts/${id}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`

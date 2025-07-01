@@ -23,7 +23,7 @@ function AddPost() {
     if (image) formData.append('image', image);
     formData.append('pros', JSON.stringify(pros.filter(p => p.trim() !== '')));
     formData.append('cons', JSON.stringify(cons.filter(c => c.trim() !== '')));
-    await fetch('http://localhost:5000/api/posts', {
+    await fetch('https://ai-tools-review.onrender.com/api/posts', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
