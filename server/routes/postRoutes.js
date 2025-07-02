@@ -41,7 +41,7 @@ router.get('/:id', getPostById);
 router.post('/', protect, authorizeRoles('admin'), upload.single('image'), addPost);
 
 // Edit a post
-router.put('/:id', protect, authorizeRoles('admin'), editPost);
+router.put('/:id', protect, authorizeRoles('admin'), upload.single('image'), editPost);
 
 // Delete a post
 router.delete('/:id', protect, authorizeRoles('admin'), deletePost);

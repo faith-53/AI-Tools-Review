@@ -8,13 +8,15 @@ const Reviews = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Extract unique categories from posts
-  const categories = ['All', ...Array.from(new Set(posts.flatMap(post => post.category ? [post.category] : (post.tags || []))))];
+  const categories = ['All', ...Array.from(new Set(posts.flatMap(post => post.tags || [])))];
 
   const filteredReviews = posts.filter(post => {
-    const matchesCategory = selectedCategory === 'All' || post.category === selectedCategory || (post.tags && post.tags.includes(selectedCategory));
+    const matchesCategory = selectedCategory === 'All' || (post.tags && post.tags.includes(selectedCategory));
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (post.excerpt && post.excerpt.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (post.content && post.content.toLowerCase().includes(searchTerm.toLowerCase()));
+      (post.summary && post.summary.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (post.sections && post.sections.some(
+        s => (s.type === 'text' || s.type === 'heading') && s.content && s.content.toLowerCase().includes(searchTerm.toLowerCase())
+      ));
     return matchesCategory && matchesSearch;
   });
 
@@ -71,8 +73,10 @@ const Reviews = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredReviews.map((post) => (
             <div key={post._id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-              <img 
-                src={post.image ? `http://localhost:5000/uploads/${post.image}` : 'https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=AI+Tool'} 
+              <img
+                src={post.image && post.image !== 'undefined' && post.image !== 'null' && post.image.trim() !== ''
+                  ? `http://localhost:5000/uploads/${post.image}`
+                  : 'https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=AI+Tool'}
                 alt={post.title}
                 className="w-full h-48 object-cover"
                 loading="lazy"
@@ -80,22 +84,17 @@ const Reviews = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                    {post.category || (post.tags && post.tags.join(', ')) || 'AI'}
+                    {post.tags && post.tags.join(', ')}
                   </span>
-                  <div className="flex items-center">
-                    <span className="text-yellow-400">★</span>
-                    <span className="ml-1 text-sm text-gray-600">{post.rating || ''}</span>
-                  </div>
                 </div>
                 <h3 className="text-xl font-semibold mb-3 text-gray-800">
                   {post.title}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  {post.excerpt || post.content?.slice(0, 100) + '...'}
+                  {post.summary || (post.sections && post.sections.find(s => s.type === 'text')?.content?.slice(0, 100) + '...')}
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <span>{post.date ? new Date(post.date).toLocaleDateString() : ''}</span>
-                  <span>{post.readTime || ''}</span>
                 </div>
                 <Link
                   to={`/reviews/${post._id}`}

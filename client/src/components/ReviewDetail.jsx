@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { usePosts } from '../context/PostContext';
-import { getComments as fetchCommentsApi, addComment as addCommentApi, editComment as editCommentApi, deleteComment as deleteCommentApi, likePost as likePostApi, unlikePost as unlikePostApi } from '../services/api';
+import { getComments as fetchCommentsApi, addComment as addCommentApi, editComment as editCommentApi, deleteComment as deleteCommentApi } from '../services/api';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,9 +17,6 @@ const ReviewDetail = () => {
   const { user } = useAuth();
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState('');
-  const [likeCount, setLikeCount] = useState(0);
-  const [liked, setLiked] = useState(false);
-  const [likeLoading, setLikeLoading] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
@@ -27,12 +24,6 @@ const ReviewDetail = () => {
       if (data) {
         setPost(data);
         setNotFound(false);
-        setLikeCount(data.likes ? data.likes.length : 0);
-        if (user && data.likes) {
-          setLiked(data.likes.includes(user._id || user.id));
-        } else {
-          setLiked(false);
-        }
       } else {
         setNotFound(true);
       }
@@ -123,29 +114,6 @@ const ReviewDetail = () => {
     }
   };
 
-  const handleLikeToggle = async () => {
-    if (!user) {
-      alert('You must be logged in to like this review.');
-      return;
-    }
-    setLikeLoading(true);
-    try {
-      if (liked) {
-        const res = await unlikePostApi(id);
-        setLikeCount(res.data.likes);
-        setLiked(false);
-      } else {
-        const res = await likePostApi(id);
-        setLikeCount(res.data.likes);
-        setLiked(true);
-      }
-    } catch {
-      alert('Failed to update like.');
-    } finally {
-      setLikeLoading(false);
-    }
-  };
-
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-gray-500">Loading review...</div>;
   }
@@ -173,9 +141,9 @@ const ReviewDetail = () => {
     <div className="min-h-screen bg-gray-50">
       <Helmet>
         <title>{post ? `${post.title} - ToolWiseAI` : 'Review - ToolWiseAI'}</title>
-        <meta name="description" content={post ? (post.excerpt || post.content?.slice(0, 150) || 'AI tool review') : 'AI tool review'} />
+        <meta name="description" content={post ? (post.summary || 'AI tool review') : 'AI tool review'} />
         <meta property="og:title" content={post ? post.title : 'AI Tool Review'} />
-        <meta property="og:description" content={post ? (post.excerpt || post.content?.slice(0, 150) || 'AI tool review') : 'AI tool review'} />
+        <meta property="og:description" content={post ? (post.summary || 'AI tool review') : 'AI tool review'} />
         <meta property="og:type" content="article" />
         <meta property="og:url" content={window.location.href} />
         <meta property="og:image" content={post && post.image ? post.image : 'https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=AI+Tool'} />
@@ -194,40 +162,19 @@ const ReviewDetail = () => {
             </div>
             <div className="mb-6">
               <span className="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
-                {post.category || (post.tags && post.tags.join(', ')) || 'AI'}
+                {post.tags && post.tags.join(', ')}
               </span>
             </div>
             <h1 className="text-4xl font-bold text-gray-800 mb-4">
               {post.title}
             </h1>
-            <p className="text-xl text-gray-600 mb-6">
-              {post.excerpt || (post.content && post.content.slice(0, 150) + '...')}
-            </p>
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center space-x-4 text-sm text-gray-500">
-                {post.author && <span>By {post.author}</span>}
-                {post.date && <><span>•</span><span>{new Date(post.date).toLocaleDateString()}</span></>}
-                {post.readTime && <><span>•</span><span>{post.readTime}</span></>}
-              </div>
-              <div className="flex items-center">
-                <div className="flex items-center gap-4 mb-4">
-                  <button
-                    onClick={handleLikeToggle}
-                    disabled={likeLoading}
-                    className={`flex items-center px-3 py-1 rounded-full border transition ${liked ? 'bg-blue-100 text-blue-600 border-blue-400' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-blue-50'}`}
-                    title={liked ? 'Unlike' : 'Like'}
-                  >
-                    <span className="mr-2">👍</span>
-                    <span>{likeCount}</span>
-                    <span className="ml-1 text-xs">{liked ? 'Liked' : 'Like'}</span>
-                  </button>
-                </div>
-                <span className="text-yellow-400 text-xl">★</span>
-                <span className="ml-2 text-lg font-semibold text-gray-800">{post.rating || ''}</span>
-              </div>
-            </div>
+            {post.summary && (
+              <p className="text-xl text-gray-600 mb-6">{post.summary}</p>
+            )}
             <img 
-              src={post.image ? `http://localhost:5000/uploads/${post.image}` : 'https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=AI+Tool'} 
+              src={post.image && post.image !== 'undefined' && post.image !== 'null' && post.image.trim() !== ''
+                ? `http://localhost:5000/uploads/${post.image}`
+                : 'https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=AI+Tool'}
               alt={post.title}
               className="w-full h-96 object-cover rounded-lg mb-8"
               loading="lazy"
@@ -239,50 +186,57 @@ const ReviewDetail = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <div 
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: post.content || '' }}
-            />
-            {/* Pros and Cons */}
-            <div className="grid md:grid-cols-2 gap-8 mt-12">
-              <div>
-                <h3 className="text-2xl font-bold text-green-600 mb-4">Pros</h3>
-                <ul className="space-y-2">
-                  {(post.pros || []).map((pro, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-green-500 mr-2">✓</span>
-                      <span>{pro}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-2xl font-bold text-red-600 mb-4">Cons</h3>
-                <ul className="space-y-2">
-                  {(post.cons || []).map((con, index) => (
-                    <li key={index} className="flex items-start">
-                      <span className="text-red-500 mr-2">✗</span>
-                      <span>{con}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-            {/* Pricing */}
-            {post.pricing && (
-              <div className="mt-12">
-                <h3 className="text-2xl font-bold text-blue-600 mb-4">Pricing</h3>
-                <ul className="list-disc list-inside text-gray-700">
-                  {typeof post.pricing === 'object' ? (
-                    Object.entries(post.pricing).map(([tier, price]) => (
-                      <li key={tier}><strong>{tier}:</strong> {price}</li>
-                    ))
-                  ) : (
-                    <li>{post.pricing}</li>
-                  )}
-                </ul>
-              </div>
-            )}
+            {post.sections && post.sections.map((section, idx) => {
+              switch (section.type) {
+                case 'heading':
+                  return <h2 key={idx} className="text-2xl font-bold mt-8 mb-4">{section.content}</h2>;
+                case 'text':
+                  return <p key={idx} className="mb-4 text-lg">{section.content}</p>;
+                case 'list':
+                  return (
+                    <ul key={idx} className="list-disc list-inside mb-4 text-lg">
+                      {(section.items || []).map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
+                  );
+                case 'checklist':
+                  return (
+                    <ul key={idx} className="list-inside mb-4 text-lg">
+                      {(section.items || []).map((item, i) => (
+                        <li key={i} className="flex items-center"><input type="checkbox" checked={false} readOnly className="mr-2" />{item}</li>
+                      ))}
+                    </ul>
+                  );
+                case 'tool':
+                  return (
+                    <div key={idx} className="border rounded p-4 mb-6 bg-gray-50">
+                      <h3 className="text-xl font-bold mb-2">{section.tool?.name}</h3>
+                      <div className="mb-2"><span className="font-semibold">Best for:</span> {section.tool?.bestFor}</div>
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold text-green-600">Pros</h4>
+                          <ul className="list-disc list-inside text-green-700">
+                            {(section.tool?.pros || []).map((pro, i) => <li key={i}>{pro}</li>)}
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-red-600">Cons</h4>
+                          <ul className="list-disc list-inside text-red-700">
+                            {(section.tool?.cons || []).map((con, i) => <li key={i}>{con}</li>)}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                case 'image':
+                  return (
+                    <div key={idx} className="my-6 text-center">
+                      <img src={section.content} alt={section.content} className="mx-auto max-h-96 rounded" />
+                    </div>
+                  );
+                default:
+                  return null;
+              }
+            })}
           </div>
 
           {/* Related Reviews */}

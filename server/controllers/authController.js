@@ -3,7 +3,7 @@ const User = require('../models/User');
 const crypto = require('crypto');
 const sendEmail = require('../config/email');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET ;
 
 exports.login = async (req, res) => {
   try {

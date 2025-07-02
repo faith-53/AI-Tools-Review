@@ -91,7 +91,9 @@ const Home = () => {
             {featuredPosts.map((post) => (
               <div key={post._id || post.id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
                 <img 
-                  src={post.image ? `https://ai-tools-review.onrender.com/uploads/${post.image}` : 'https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=AI+Tool'} 
+                  src={post.image && post.image !== 'undefined' && post.image !== 'null' && post.image.trim() !== ''
+                    ? `http://localhost:5000/uploads/${post.image}`
+                    : 'https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=AI+Tool'} 
                   alt={post.title}
                   className="w-full h-48 object-cover"
                   loading="lazy"

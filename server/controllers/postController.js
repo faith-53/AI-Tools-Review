@@ -6,7 +6,7 @@ const path = require('path');
 // Add a new post
 exports.addPost = async (req, res) => {
   try {
-    const { title, content, tags, pros, cons } = req.body;
+    const { title, summary, tags, sections } = req.body;
     let image = null;
     if (req.file) {
       // Convert to WebP and compress
@@ -21,11 +21,9 @@ exports.addPost = async (req, res) => {
       fs.unlinkSync(inputPath);
       image = outputFilename;
     }
-    let prosArr = pros;
-    let consArr = cons;
-    if (typeof pros === 'string') prosArr = JSON.parse(pros);
-    if (typeof cons === 'string') consArr = JSON.parse(cons);
-    const newPost = new Post({ title, content, tags, image, pros: prosArr, cons: consArr });
+    let sectionsArr = sections;
+    if (typeof sections === 'string') sectionsArr = JSON.parse(sections);
+    const newPost = new Post({ title, summary, tags, image, sections: sectionsArr });
     await newPost.save();
     res.status(201).json(newPost);
   } catch (error) {
@@ -37,14 +35,13 @@ exports.addPost = async (req, res) => {
 exports.editPost = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, tags, pros, cons } = req.body;
-    let prosArr = pros;
-    let consArr = cons;
-    if (typeof pros === 'string') prosArr = JSON.parse(pros);
-    if (typeof cons === 'string') consArr = JSON.parse(cons);
+    const { title, summary, tags, sections } = req.body;
+    let sectionsArr = sections;
+    if (typeof sections === 'string') sectionsArr = JSON.parse(sections);
+    const update = { title, summary, tags, sections: sectionsArr };
     const updatedPost = await Post.findByIdAndUpdate(
       id,
-      { title, content, tags, pros: prosArr, cons: consArr },
+      update,
       { new: true }
     );
     if (!updatedPost) {
