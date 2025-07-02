@@ -5,7 +5,10 @@ const path = require('path');
 
 // Add a new post
 exports.addPost = async (req, res) => {
+  
   try {
+    console.log('addPost req.file:', req.file);
+    console.log('addPost req.body:', req.body);
     const { title, summary, tags, sections } = req.body;
     let image = null;
     if (req.file) {
@@ -34,19 +37,37 @@ exports.addPost = async (req, res) => {
 // Edit an existing post
 exports.editPost = async (req, res) => {
   try {
+    console.log('editPost req.file:', req.file);
+    console.log('editPost req.body:', req.body);
     const { id } = req.params;
     const { title, summary, tags, sections } = req.body;
     let sectionsArr = sections;
     if (typeof sections === 'string') sectionsArr = JSON.parse(sections);
-    const update = { title, summary, tags, sections: sectionsArr };
+    // Find the existing post to get the current image
+    const existingPost = await Post.findById(id);
+    if (!existingPost) {
+      return res.status(404).json({ message: 'Post not found' });
+    }
+    let image = existingPost.image;
+    if (req.file) {
+      // Convert to WebP and compress
+      const inputPath = req.file.path;
+      const outputFilename = `${Date.now()}-converted.webp`;
+      const outputPath = path.join(path.dirname(inputPath), outputFilename);
+      await sharp(inputPath)
+        .webp({ quality: 80 })
+        .resize({ width: 1200, withoutEnlargement: true })
+        .toFile(outputPath);
+      // Delete original upload
+      fs.unlinkSync(inputPath);
+      image = outputFilename;
+    }
+    const update = { title, summary, tags, sections: sectionsArr, image };
     const updatedPost = await Post.findByIdAndUpdate(
       id,
       update,
       { new: true }
     );
-    if (!updatedPost) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
     res.status(200).json(updatedPost);
   } catch (error) {
     res.status(500).json({ message: 'Error editing post', error });

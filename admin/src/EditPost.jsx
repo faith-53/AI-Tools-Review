@@ -80,7 +80,7 @@ function EditPost() {
       formData.append('tags', tags);
       formData.append('image', image);
       formData.append('sections', JSON.stringify(sections));
-      await fetch(`http://localhost:5000/api/posts/${id}`, {
+      await fetch(`https://ai-tools-review.onrender.com/api/posts/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -89,7 +89,7 @@ function EditPost() {
       });
     } else {
       // If no new image, send JSON
-      await fetch(`http://localhost:5000/api/posts/${id}`, {
+      await fetch(`https://ai-tools-review.onrender.com/api/posts/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

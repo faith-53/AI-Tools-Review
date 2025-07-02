@@ -171,14 +171,6 @@ const ReviewDetail = () => {
             {post.summary && (
               <p className="text-xl text-gray-600 mb-6">{post.summary}</p>
             )}
-            <img 
-              src={post.image && post.image !== 'undefined' && post.image !== 'null' && post.image.trim() !== ''
-                ? `http://localhost:5000/uploads/${post.image}`
-                : 'https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=AI+Tool'}
-              alt={post.title}
-              className="w-full h-96 object-cover rounded-lg mb-8"
-              loading="lazy"
-            />
           </div>
         </div>
       </div>

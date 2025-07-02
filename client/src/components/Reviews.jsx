@@ -73,14 +73,7 @@ const Reviews = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredReviews.map((post) => (
             <div key={post._id} className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300">
-              <img
-                src={post.image && post.image !== 'undefined' && post.image !== 'null' && post.image.trim() !== ''
-                  ? `http://localhost:5000/uploads/${post.image}`
-                  : 'https://via.placeholder.com/400x250/3B82F6/FFFFFF?text=AI+Tool'}
-                alt={post.title}
-                className="w-full h-48 object-cover"
-                loading="lazy"
-              />
+              
               <div className="p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
@@ -91,7 +84,9 @@ const Reviews = () => {
                   {post.title}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  {post.summary || (post.sections && post.sections.find(s => s.type === 'text')?.content?.slice(0, 100) + '...')}
+                  {post.summary && post.summary.length > 100
+                    ? post.summary.slice(0, 100) + '...'
+                    : post.summary || (post.sections && post.sections.find(s => s.type === 'text')?.content?.slice(0, 100) + '...')}
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <span>{post.date ? new Date(post.date).toLocaleDateString() : ''}</span>
