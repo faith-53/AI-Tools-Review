@@ -9,7 +9,7 @@ function Dashboard() {
 
   const fetchPosts = async () => {
     setLoading(true);
-    const res = await fetch('http://localhost:5000/api/posts', {
+    const res = await fetch('https://ai-tools-review.onrender.com/api/posts', {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -25,7 +25,7 @@ function Dashboard() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this post?')) return;
-    await fetch(`http://localhost:5000/api/posts/${id}`, {
+    await fetch(`https://ai-tools-review.onrender.com/api/posts/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`

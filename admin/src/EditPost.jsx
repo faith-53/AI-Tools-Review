@@ -24,7 +24,7 @@ function EditPost() {
 
   useEffect(() => {
     const fetchPost = async () => {
-      const res = await fetch(`http://localhost:5000/api/posts/${id}`, {
+      const res = await fetch(`https://ai-tools-review.onrender.com/api/posts/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
