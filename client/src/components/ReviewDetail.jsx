@@ -186,7 +186,7 @@ const ReviewDetail = () => {
                   return <p key={idx} className="mb-4 text-lg">{section.content}</p>;
                 case 'list':
                   return (
-                    <ul key={idx} className="list-disc list-inside mb-4 text-lg">
+                    <ul key={idx} className="list-disc list-inside marker:text-blue-500 space-y-2">
                       {(section.items || []).map((item, i) => <li key={i}>{item}</li>)}
                     </ul>
                   );
