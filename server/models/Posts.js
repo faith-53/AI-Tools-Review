@@ -10,7 +10,7 @@ const commentSchema = new mongoose.Schema({
 const sectionSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["text", "list", "tool", "image", "checklist", "heading"],
+    enum: ["text", "list", "tool", "image", "checklist", "heading", "markdown"],
     required: true
   },
   content: String, // for text, heading, or image URL
@@ -27,7 +27,7 @@ const postSchema = new mongoose.Schema({
   title: { type: String, required: true },
   summary: String,
   tags: [String],
-  image: String, // main/cover image
+  image: String, // main/cover image\
   comments: [commentSchema],
   likes: [String],
   sections: [sectionSchema],

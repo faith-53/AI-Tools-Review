@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { getComments as fetchCommentsApi, addComment as addCommentApi, editComment as editCommentApi, deleteComment as deleteCommentApi } from '../services/api';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
+import { usePosts } from '../context/PostContext';
 import ReactMarkdown from 'react-markdown';
 
 const ReviewDetail = () => {
@@ -16,18 +17,18 @@ const ReviewDetail = () => {
   const [commentsLoading, setCommentsLoading] = useState(false);
   const [commentsError, setCommentsError] = useState(null);
   const { user } = useAuth();
+  const { getPost} = usePosts();
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentText, setEditingCommentText] = useState('');
-  const BACKEND_URL = 'https://ai-tools-review.onrender.com';
+  
 
   useEffect(() => {
     const fetch = async () => {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`${BACKEND_URL}/api/posts/${id}`);
-        if (!res.ok) throw new Error('Post not found');
-        const data = await res.json();
+        const data = await getPost(id);
+        if (!data) throw new Error('Post not found');
         setPost(data);
         setNotFound(false);
       } catch (err) {
@@ -37,7 +38,7 @@ const ReviewDetail = () => {
         setLoading(false);
       }
     };
-    fetch();
+    if (id) fetch();
     // eslint-disable-next-line
   }, [id, user]);
 
@@ -162,7 +163,7 @@ const ReviewDetail = () => {
       </div>
       {/* Content Section */}
       <div className="container mx-auto px-4 py-8">
-        <article className="prose prose-xl md:prose-2xl mx-auto max-w-4xl prose-li:text-left prose-ul:pl-6 prose-ol:pl-6 prose-ul:list-disc prose-ol:list-decimal">
+        <article className="prose prose-xl md:prose-2xl mx-auto max-w-4xl">
           {post.sections && post.sections.map((section, idx) => {
             switch (section.type) {
               case 'heading':

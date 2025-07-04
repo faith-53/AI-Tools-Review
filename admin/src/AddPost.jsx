@@ -9,6 +9,9 @@ const SECTION_TYPES = [
   { value: 'checklist', label: 'Checklist' },
   { value: 'tool', label: 'Tool Review Block' },
   { value: 'image', label: 'Image' },
+  { value: 'markdown', label: 'Markdown' },
+  { value: 'tips', label: 'Tips' },
+  { value: 'links', label: 'Links' },
 ];
 
 function AddPost() {
@@ -109,6 +112,15 @@ function AddPost() {
               )}
               {section.type === 'image' && (
                 <input type="text" placeholder="Image URL or description" value={section.content || ''} onChange={e => handleSectionChange(idx, 'content', e.target.value)} className="w-full p-2 border rounded" />
+              )}
+              {section.type === 'markdown' && (
+                <textarea placeholder="Markdown content" value={section.content || ''} onChange={e => handleSectionChange(idx, 'content', e.target.value)} className="w-full p-2 border rounded font-mono" rows={8} />
+              )}
+              {section.type === 'tips' && (
+                <textarea placeholder="One tip per line" value={(section.items || []).join('\n')} onChange={e => handleSectionItemsChange(idx, e.target.value.split('\n'))} className="w-full p-2 border rounded" />
+              )}
+              {section.type === 'links' && (
+                <textarea placeholder="One link per line, format: [text](url)" value={(section.items || []).join('\n')} onChange={e => handleSectionItemsChange(idx, e.target.value.split('\n'))} className="w-full p-2 border rounded font-mono" />
               )}
             </div>
           ))}
