@@ -9,7 +9,7 @@ exports.addPost = async (req, res) => {
   try {
     console.log('addPost req.file:', req.file);
     console.log('addPost req.body:', req.body);
-    const { title, summary, tags, sections } = req.body;
+    const { title, summary, tags, content } = req.body;
     let image = null;
     if (req.file) {
       // Convert to WebP and compress
@@ -24,9 +24,7 @@ exports.addPost = async (req, res) => {
       fs.unlinkSync(inputPath);
       image = outputFilename;
     }
-    let sectionsArr = sections;
-    if (typeof sections === 'string') sectionsArr = JSON.parse(sections);
-    const newPost = new Post({ title, summary, tags, image, sections: sectionsArr });
+    const newPost = new Post({ title, summary, tags, image, content });
     await newPost.save();
     res.status(201).json(newPost);
   } catch (error) {
@@ -40,9 +38,7 @@ exports.editPost = async (req, res) => {
     console.log('editPost req.file:', req.file);
     console.log('editPost req.body:', req.body);
     const { id } = req.params;
-    const { title, summary, tags, sections } = req.body;
-    let sectionsArr = sections;
-    if (typeof sections === 'string') sectionsArr = JSON.parse(sections);
+    const { title, summary, tags, content } = req.body;
     // Find the existing post to get the current image
     const existingPost = await Post.findById(id);
     if (!existingPost) {
@@ -62,7 +58,7 @@ exports.editPost = async (req, res) => {
       fs.unlinkSync(inputPath);
       image = outputFilename;
     }
-    const update = { title, summary, tags, sections: sectionsArr, image };
+    const update = { title, summary, tags, content, image };
     const updatedPost = await Post.findByIdAndUpdate(
       id,
       update,

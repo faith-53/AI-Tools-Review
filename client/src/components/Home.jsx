@@ -107,7 +107,7 @@ const Home = () => {
                   <p className="text-gray-600 mb-4">
                     {post.summary && post.summary.length > 100
                       ? post.summary.slice(0, 100) + '...'
-                      : post.summary}
+                      : post.summary || (post.content && post.content.replace(/<[^>]+>/g, '').slice(0, 100) + '...')}
                   </p>
                   <Link
                     to={`/reviews/${post._id || post.id}`}

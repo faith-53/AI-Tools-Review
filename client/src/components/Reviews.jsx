@@ -14,9 +14,7 @@ const Reviews = () => {
     const matchesCategory = selectedCategory === 'All' || (post.tags && post.tags.includes(selectedCategory));
     const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (post.summary && post.summary.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (post.sections && post.sections.some(
-        s => (s.type === 'text' || s.type === 'heading') && s.content && s.content.toLowerCase().includes(searchTerm.toLowerCase())
-      ));
+      (post.content && post.content.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
 
@@ -86,7 +84,7 @@ const Reviews = () => {
                 <p className="text-gray-600 mb-4">
                   {post.summary && post.summary.length > 100
                     ? post.summary.slice(0, 100) + '...'
-                    : post.summary || (post.sections && post.sections.find(s => s.type === 'text')?.content?.slice(0, 100) + '...')}
+                    : post.summary || (post.content && post.content.replace(/<[^>]+>/g, '').slice(0, 100) + '...')}
                 </p>
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <span>{post.date ? new Date(post.date).toLocaleDateString() : ''}</span>

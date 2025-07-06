@@ -164,85 +164,9 @@ const ReviewDetail = () => {
       {/* Content Section */}
       <div className="container mx-auto px-4 py-8">
         <article className="prose prose-xl md:prose-2xl mx-auto max-w-4xl">
-          {post.sections && post.sections.map((section, idx) => {
-            switch (section.type) {
-              case 'heading':
-                return <h2 key={idx} className="mt-12 mb-6 text-3xl font-extrabold text-blue-800 border-b-2 border-blue-200 pb-2">{section.content}</h2>;
-              case 'text':
-                return <p key={idx}>{section.content}</p>;
-              case 'markdown':
-                return <ReactMarkdown key={idx}
-                  components={{
-                    h1: (props) => <h1 className="mt-12 mb-6 text-4xl font-extrabold text-blue-900 border-b-2 border-blue-300 pb-2" {...props} />,
-                    h2: (props) => <h2 className="mt-10 mb-4 text-3xl font-bold text-blue-800 border-b border-blue-200 pb-1" {...props} />,
-                    h3: (props) => <h3 className="mt-8 mb-2 text-2xl font-semibold text-blue-700" {...props} />,
-                    ul: (props) => <ul className="list-disc list-inside ml-6 my-4 marker:text-blue-500 space-y-2" {...props} />,
-                    ol: (props) => <ol className="list-decimal list-inside ml-6 my-4 marker:text-purple-500 space-y-2" {...props} />,
-                    li: (props) => <li className="pl-1" {...props} />
-                  }}
-                >{section.content || ''}</ReactMarkdown>;
-              case 'tips':
-                return (
-                  <div key={idx} className="my-8 p-4 bg-blue-50 border-l-4 border-blue-400 rounded">
-                    <h3 className="font-semibold text-blue-700 mb-2">Tips</h3>
-                    <ul className="list-disc list-inside text-blue-900 ml-6 space-y-2 marker:text-blue-500">
-                      {(section.items || []).map((tip, i) => <li key={i}>{tip}</li>)}
-                    </ul>
-                  </div>
-                );
-              case 'links':
-                return (
-                  <div key={idx} className="my-8 p-4 bg-gray-50 border-l-4 border-gray-400 rounded">
-                    <h3 className="font-semibold text-gray-700 mb-2">Links</h3>
-                    <ul className="list-disc list-inside ml-6 space-y-2 marker:text-blue-600">
-                      {(section.items || []).map((link, i) => {
-                        const match = link.match(/^\[(.*)\]\((.*)\)$/);
-                        if (match) {
-                          return <li key={i}><a href={match[2]} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline font-medium">{match[1]}</a></li>;
-                        } else {
-                          return <li key={i}>{link}</li>;
-                        }
-                      })}
-                    </ul>
-                  </div>
-                );
-              case 'list':
-                return <ul key={idx} className="list-disc list-inside ml-6 my-4 marker:text-blue-500 space-y-2">{(section.items || []).map((item, i) => <li key={i}>{item}</li>)}</ul>;
-              case 'checklist':
-                return (
-                  <ul key={idx} className="ml-6 my-4 space-y-2">
-                    {(section.items || []).map((item, i) => (
-                      <li key={i} className="flex items-center"><input type="checkbox" checked={false} readOnly className="mr-2 accent-blue-500" />{item}</li>
-                    ))}
-                  </ul>
-                );
-              case 'tool':
-                return (
-                  <div key={idx} className="my-8 p-4 bg-green-50 border-l-4 border-green-400 rounded">
-                    <h3 className="font-semibold text-green-700 mb-2">{section.tool?.name}</h3>
-                    <div className="mb-2"><strong>Best for:</strong> {section.tool?.bestFor}</div>
-                    <div className="flex flex-col md:flex-row gap-8">
-                      <div>
-                        <strong>Pros</strong>
-                        <ul className="list-disc list-inside text-green-800">{(section.tool?.pros || []).map((pro, i) => <li key={i}>{pro}</li>)}</ul>
-                      </div>
-                      <div>
-                        <strong>Cons</strong>
-                        <ul className="list-disc list-inside text-red-800">{(section.tool?.cons || []).map((con, i) => <li key={i}>{con}</li>)}</ul>
-                      </div>
-                    </div>
-                  </div>
-                );
-              case 'image':
-                return (
-                  <div key={idx} className="text-center my-8">
-                    <img src={section.content} alt={section.content} className="inline-block max-h-96 rounded shadow" />
-                  </div>
-                );
-              default:
-                return null;
-            }
-          })}
+          {post.content && (
+            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          )}
         </article>
         {/* Comments Section */}
         <div className="mt-16">
