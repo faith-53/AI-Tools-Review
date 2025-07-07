@@ -71,3 +71,38 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.prose li > p {
+  margin: 0 !important;
+  display: inline !important;
+}
+
+.prose ul, .prose ol {
+  padding-left: 1.2em !important;
+}
+
+.prose li {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.prose ul > li, .prose ol > li {
+  padding-left: 0.2em !important;
+}
+
+.prose li > * {
+  display: inline !important;
+  margin: 0 !important;
+}
+
+.prose ul li p,
+.prose ol li p {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.prose ul li,
+.prose ol li {
+  margin: 0 !important;
+  padding-left: 0 !important;
+}

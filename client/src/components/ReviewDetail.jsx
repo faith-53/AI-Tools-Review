@@ -6,6 +6,10 @@ import { useAuth } from '../context/AuthContext';
 import { usePosts } from '../context/PostContext';
 import ReactMarkdown from 'react-markdown';
 
+function cleanListParagraphs(html) {
+  return html.replace(/<li><p>(.*?)<\/p><\/li>/g, '<li>$1</li>');
+}
+
 const ReviewDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
@@ -152,21 +156,19 @@ const ReviewDetail = () => {
       </Helmet>
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 py-12 mb-8">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
+        <div className="container  px-4">
+          <div className="max-w-3xl mx-auto ">
             <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">{post.title}</h1>
             {post.summary && (
-              <p className="text-xl text-blue-100 mb-0 prose prose-invert mx-auto">{post.summary}</p>
+              <p className="text-xl text-blue-100 mb-0 prose prose-invert  w-full max-w-none">{post.summary}</p>
             )}
           </div>
         </div>
       </div>
       {/* Content Section */}
       <div className="container mx-auto px-4 py-8">
-        <article className="prose prose-xl md:prose-2xl mx-auto max-w-4xl">
-          {post.content && (
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
-          )}
+        <article className="prose w-full max-w-none">
+          <div dangerouslySetInnerHTML={{ __html: cleanListParagraphs(post.content) }} />
         </article>
         {/* Comments Section */}
         <div className="mt-16">
