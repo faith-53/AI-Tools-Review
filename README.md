@@ -8,7 +8,3 @@ This is a monorepo project containing:
 ## Getting Started
 
 Each subdirectory contains its own README with setup instructions.
-
----
-
-Feel free to update this file with more details about your project! 
